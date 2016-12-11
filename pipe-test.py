@@ -13,6 +13,39 @@ def tensor_loop(conn):
         pass
     conn.close()
 
+
+class PipeClass(object):
+
+    def __init__(self, pipe_connection):
+        self.exiting = False
+        self.conn = pipe_connection
+
+    def main_process(self):
+        while not self.exiting:
+            if self.conn.poll() is True:
+                in_val = self.conn.recv()
+                self.receive_func(in_val)
+            out_val = self.send_func()
+            if out_val is not None:
+                self.conn.send(out_val)
+        while self.conn.recv() != 'end':
+            self.exit_loop()
+        self.conn.close()
+
+    def soft_exit(self):
+        self.exiting = True
+
+    def receive_func(self, data):
+        pass
+
+    def send_func(self):
+        pass
+
+    def exit_loop(self):
+        pass
+
+
+
 if __name__ == '__main__':
     parent_conn, child_conn = Pipe(duplex=True)
     p = Process(target = tensor_loop, args = (child_conn,))
