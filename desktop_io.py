@@ -1,19 +1,6 @@
-import os
+import subprocess as sp
+import numpy as np
 
-def get_pixel(x,y):
-    """ Virtual function. """
-    pass
-
-if os.name == 'nt': # if windows
-    from ctypes import windll
-    dc = windll.user32.GetDC(0)
-
-    def get_pixel(x,y):
-        rgb = windll.gdi32.GetPixel(dc, x, y)
-        r = rgb%256
-        g = (rgb>>8)%256
-        b = (rgb>>16)%256
-        return (r, g, b)
-
-if __name__ == '__main__':
-    print(get_pixel(300,300))
+# http://stackoverflow.com/questions/6766333/capture-windows-screen-with-ffmpeg
+# https://ffmpeg.org/ffmpeg-devices.html#gdigrab
+# http://zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/
