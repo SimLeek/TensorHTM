@@ -13,6 +13,7 @@ class ScreenCaster(object):
         self.height = height
         self.command = ['ffmpeg',
                    '-f', 'gdigrab',
+                   '-framerate', '16',
                    '-offset_x', str(center_x),
                    '-offset_y', str(center_y),
                    '-video_size', str(width) + 'x' + str(height),
