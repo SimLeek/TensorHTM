@@ -7,17 +7,18 @@ import tempfile as tf
 
 class ScreenCaster(object):
 
-    def cast_screen(self, center_x = 400, center_y = 200, width = 100, height = 100):
-        self.width = width
+    def cast_screen(self, center_x = 400, center_y = 200, height = 100, width = 100):
         self.height = height
+        self.width = width
         self.center_x = center_x
         self.center_y = center_y
+        #todo: set registry options for screen-capture-recorder before start
         self.command = ['ffmpeg', '-f',
                         'dshow',
-                   '-framerate', '30',
+                   #'-framerate', '50',
                    '-i', 'video=screen-capture-recorder',
-                   '-filter:v', 'crop='+str(width)+':'+str(height)+':'+str(center_x)+':'+str(center_y)+', '+
-                   'unsharp=13:13:5:7:7:2, unsharp=13:13:5:7:7:2',
+                   '-filter:v', 'crop=' + str(width) + ':' + str(height) + ':' + str(center_x) + ':' + str(center_y)+', '+
+                   'unsharp=13:13:5, unsharp=13:13:5',
                    '-f', 'image2pipe',
                    '-pix_fmt', 'rgb24',
                    '-vcodec', 'rawvideo',
@@ -38,15 +39,15 @@ class ScreenCaster(object):
     def get_image(self):
         # https://thraxil.org/users/anders/posts/2008/03/13/Subprocess-Hanging-PIPE-is-your-enemy/
         # (Tell Anders I love them.)
-        self.tfile.seek(self.frame_number*self.width*self.height*3)
+        self.tfile.seek(self.frame_number * self.height * self.width * 3)
         # raw_image = self.tfile.read(self.width*self.height*3)
 
-        raw_image = self.tfile.read(self.width*self.height*3)
+        raw_image = self.tfile.read(self.height * self.width * 3)
 
         # print(self.pipe.stderr.read())
         try:
             image = np.fromstring(raw_image, dtype='uint8')
-            image = image.reshape((self.width, self.height, 3))
+            image = image.reshape((self.height, self.width, 3))
             self.frame_number += 1
             # print(self.frame_number)
             # self.p.stdout.flush()
