@@ -553,9 +553,9 @@ def add_array(point_displayer, widths, normal, center, color):
     else:
         xn = [1,0,0]
         zn = [0,0,1]
-    for x in range(-int(m.floor(widths[0]/2.0)), int(m.ceil(widths[0]/2.0))):
+    for z in range(-int(m.floor(widths[2] / 2.0)), int(m.ceil(widths[2] / 2.0))):
         for y in range(-int(m.floor(widths[1] / 2.0)), int(m.ceil(widths[1] / 2.0))):
-            for z in range(-int(m.floor(widths[2] / 2.0)), int(m.ceil(widths[2] / 2.0))):
+            for x in range(-int(m.floor(widths[0] / 2.0)), int(m.ceil(widths[0] / 2.0))):
                 axisizer = np.column_stack((np.transpose(xn),np.transpose(true_normal), np.transpose(zn)))
                 translation = np.matmul([x,y,z], axisizer)
                 point_location = [center[0], center[1], center[2]] + translation
