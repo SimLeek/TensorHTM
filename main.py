@@ -3,6 +3,7 @@ import desktop_io as dio
 import SimplePipe as sp
 import numpy as np
 
+#todo: fix non square aspect ratio problem
 g_width = 120
 g_height = 120
 
