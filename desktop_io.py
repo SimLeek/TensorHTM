@@ -49,12 +49,15 @@ class ScreenCaster(object):
             self.command.extend([
                    '-map', '[out'+str(i+1)+']',
                    # '-preset', 'ultrafast',
-                   '-f', 'rawvideo',
-                   '-pix_fmt', 'rgb24',
+                   '-f', 'rtp',
+                   # '-pix_fmt', 'rgb24',
+                   '-sdp_file', 'stream.sdp'
+                   'rtp://localhost:'+str(self.start_port+i)])
 
-                   'udp://localhost:'+str(self.start_port+i)])
-
-        print(self.command)
+        str_command = ""
+        for i in range(len(self.command)):
+            str_command += '"'+self.command[i]+'" '
+        print(str_command)
 
         # self.tf.write("do it")
         self.p = sp.Popen(self.command, stdout=sp.PIPE, stdin=sp.PIPE)
