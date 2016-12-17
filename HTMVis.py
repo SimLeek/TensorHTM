@@ -401,7 +401,7 @@ class PointDisplayer:
         line_actor = vtk.vtkActor()
         point_actor.SetMapper(point_mapper)
         line_actor.SetMapper(line_mapper)
-        point_actor.GetProperty().SetPointSize(5)#todo:allow modification
+        point_actor.GetProperty().SetPointSize(10)#todo:allow modification
         #actor.GetProperty().SetPointColor
 
         renderer = vtk.vtkRenderer()
@@ -557,7 +557,7 @@ def add_array(point_displayer, widths, normal, center, color):
         for y in range(-int(m.floor(widths[1] / 2.0)), int(m.ceil(widths[1] / 2.0))):
             for x in range(-int(m.floor(widths[0] / 2.0)), int(m.ceil(widths[0] / 2.0))):
                 axisizer = np.column_stack((np.transpose(xn),np.transpose(true_normal), np.transpose(zn)))
-                translation = np.matmul([x,y,z], axisizer)
+                translation = np.matmul([x,y,z*10], axisizer)
                 point_location = [center[0], center[1], center[2]] + translation
                 point_displayer.add_point(point_location, color)
 
