@@ -1,12 +1,15 @@
 import HTMVis as htmv
 import desktop_io as dio
+from vtk.util import numpy_support
+import vtk
 import socket as sock
 import numpy as np
 
-g_capture_height = 1080
-g_capture_width = 1920
-g_output_height = 34
-g_output_width = 60
+
+g_capture_height = 1080/2
+g_capture_width = 1920/2
+g_output_height = 60
+g_output_width = 120
 
 class VidPointLoop(htmv.TimerCallback):
     def __init__(self):
@@ -14,28 +17,37 @@ class VidPointLoop(htmv.TimerCallback):
 
     def start(self):
         self.sc = dio.ScreenCaster()
-        self.sc.cast_screen([{'center_x':1920/2, 'center_y':1080/2,
+        self.sc.cast_screen([{'center_x':g_capture_width/2, 'center_y':g_capture_height/2,
                             'capture_height': g_capture_height, 'capture_width':g_capture_width,
                             'output_height':g_output_height,'output_width':g_output_width},
-                             {'center_x': 1920 / 2, 'center_y': 1080 / 2,
+                             {'center_x': g_capture_width / 2, 'center_y': g_capture_height / 2,
                               'capture_height': g_capture_height/6, 'capture_width': g_capture_width/6,
                               'output_height': g_output_height, 'output_width': g_output_width},
-                             {'center_x': 1920 / 2, 'center_y': 1080 / 2,
-                              'capture_height': g_capture_height/24, 'capture_width': g_capture_width/24,
+                             {'center_x': g_capture_width/2, 'center_y': g_capture_height/2,
+                              'capture_height': g_output_height, 'capture_width': g_output_width,
                               'output_height': g_output_height, 'output_width': g_output_width}
                             ])
 
 
     def loop(self, obj, event):
         img_list = self.sc.get_image()
+        colors = vtk.vtkUnsignedCharArray()
+        colors.SetNumberOfComponents(3)
+        colors.SetName("Colors")
+        color_list = []
         for j in range(len(img_list)):
-            if img_list[j] != [] and img_list[j] != False:
-                print(img_list[j])
-                for i in range(g_output_height*g_output_width*j, g_output_height*g_output_width*(j+1)):
-                    self.point_colors.SetTypedTuple(i, [int(img_list[j][int(i % g_output_height)][int(((i-g_output_height*g_output_width*j) / g_output_height))][0]),
-                                                        int(img_list[j][int(i % g_output_height)][int(((i-g_output_height*g_output_width*j) / g_output_height))][1]),
-                                                        int(img_list[j][int(i % g_output_height)][int(((i-g_output_height*g_output_width*j) / g_output_height))][2])])
+            if img_list[j][0] != False:
+                img = img_list[j][1]
+                img_shape = img.shape
+                img = np.swapaxes(img, 0,1)
+                new_img = img.reshape(img_shape[0]*img_shape[1], 3, order='A')
+                if j==0:
+                    color_list=new_img
+                else:
+                    color_list = np.concatenate((color_list, new_img))
+        vtk_data = numpy_support.numpy_to_vtk(num_array=color_list, deep=True, array_type=vtk.VTK_UNSIGNED_CHAR)
 
+        self.point_colors.DeepCopy(vtk_data)
 
         '''self.point_colors.SetTypedTuple(i, [int(i%255),
                                                     int((i/255)%255),
