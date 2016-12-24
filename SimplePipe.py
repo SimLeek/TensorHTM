@@ -79,6 +79,7 @@ class PipeClass(object):
         Should be implemented in derived class. """
         pass
 
+
 class ExamplePipeClass(PipeClass):
     def __init__(self):
         super().__init__()
